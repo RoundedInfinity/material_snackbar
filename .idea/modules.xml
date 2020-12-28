@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/material_snackbar.iml" filepath="$PROJECT_DIR$/material_snackbar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/material_snackbar_android.iml" filepath="$PROJECT_DIR$/android/material_snackbar_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/android/material_snackbar_example_android.iml" filepath="$PROJECT_DIR$/example/android/material_snackbar_example_android.iml" />
+    </modules>
+  </component>
+</project>

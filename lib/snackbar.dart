@@ -116,7 +116,7 @@ class MaterialSnackbar extends StatefulWidget {
   @override
   _MaterialSnackbarState createState() => _MaterialSnackbarState();
 
-  /// Copies this snackbar and add a callback before [onDismiss] is called.
+  /// Copy this snackbar and add a callback before [onDismiss] is called.
   MaterialSnackbar withCustomCallback({
     VoidCallback callback,
   }) {
@@ -165,6 +165,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
     await hideSnackbar();
   }
 
+  /// Hide this snackbar and with the fade out animation.
   Future<void> hideSnackbar() async {
     if (_controller.isCompleted) await _controller.reverse().orCancel;
 
@@ -177,45 +178,62 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
     var theme = Theme.of(context).brightness == Brightness.dark
         ? ThemeData.light()
         : ThemeData.dark();
-
+    var isMobile = theme.platform == TargetPlatform.iOS ||
+        theme.platform == TargetPlatform.android;
     var shape = snackBarTheme.shape ??
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0));
     var elevation = snackBarTheme.elevation ?? 12;
 
+    var maxHeight = isMobile ? 144.0 : 168.0;
+
     _showAndHideSnackbar();
 
-    var _snackbar = Theme(
-      data: theme,
-      child: Material(
-        shape: shape,
-        elevation: elevation,
-        color: snackBarTheme.backgroundColor ?? null,
-        child: Padding(
-          padding: EdgeInsetsDirectional.only(start: 16, end: 16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 14.0),
-                child: widget.content,
-              ),
-              if (widget.action != null)
-                TextButtonTheme(
-                  data: TextButtonThemeData(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+    var _snackbar = Container(
+      constraints: BoxConstraints(maxHeight: maxHeight, minWidth: 344),
+      child: LayoutBuilder(
+        builder: (context, constraints) => Theme(
+          data: theme,
+          child: Material(
+            shape: shape,
+            elevation: elevation,
+            color: snackBarTheme.backgroundColor ?? null,
+            child: Padding(
+              padding: EdgeInsetsDirectional.only(start: 16, end: 16),
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                runAlignment: WrapAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    constraints:
+                        BoxConstraints(maxWidth: constraints.maxWidth - 32),
+                    padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    child: DefaultTextStyle(
+                      child: widget.content,
+                      style: snackBarTheme.contentTextStyle ??
+                          theme.textTheme.bodyText2,
+                      maxLines: isMobile ? 2 : 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  child: widget.action,
-                ),
-            ],
+                  if (widget.action != null)
+                    TextButtonTheme(
+                      data: TextButtonThemeData(
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        ),
+                      ),
+                      child: widget.action,
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
 
+// Don't use a animation if accessibleNavigation navigation is activated.
     return MediaQuery.of(context).accessibleNavigation ?? false
         ? _snackbar
         : FadeScaleTransition(

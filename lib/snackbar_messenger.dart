@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'snackbar.dart';
 
+// ignore: avoid_classes_with_only_static_members
 /// For displaying material snackbars.
 ///  Equivalent of the `ScaffoldMessenger`.
 ///
@@ -58,7 +59,10 @@ class MaterialSnackBarMessengerState {
 
   /// Display a [MaterialSnackbar] using the [newest material design.](https://material.io/components/snackbars#full-screen-dialog).
   ///
-  /// [snackbar],[padding] and [alignment] can’t be null.
+  /// [snackbar] and [padding] can’t be null.
+  ///
+  /// [alignment] defaults to `Aligment.bottomCenter` on android and iOS
+  ///  and `Aligment.bottomLeft` on desktop.
   ///
   /// If a [MaterialSnackbar] is already displayed,
   /// this [snackbar] gets added to the `snackbarQueue`
@@ -84,16 +88,25 @@ class MaterialSnackBarMessengerState {
   void showSnackBar({
     @required MaterialSnackbar snackbar,
     EdgeInsetsGeometry padding = const EdgeInsets.all(20.0),
-    Alignment alignment = Alignment.bottomRight,
+    Alignment alignment,
   }) {
-    assert(alignment != null);
     assert(padding != null);
     assert(snackbar != null);
 
     OverlayEntry _overlay;
+    var isMobile = Theme.of(context).platform == TargetPlatform.iOS ||
+        Theme.of(context).platform == TargetPlatform.android;
+
+    alignment ??= isMobile ? Alignment.bottomCenter : Alignment.bottomLeft;
 
     void _onDismiss() {
-      if (_overlay != null) _overlay.remove();
+      if (_overlay != null) {
+        try {
+          _overlay.remove();
+        } on Exception {
+          return;
+        }
+      }
       MaterialSnackBarMessenger.snackbarQueue.remove(_overlay);
       _queueSnackbars();
     }
@@ -106,10 +119,8 @@ class MaterialSnackBarMessengerState {
           child: Padding(
             padding: padding,
             child: Builder(
-              builder: (context) => Container(
-                constraints: BoxConstraints(maxHeight: 68, minWidth: 344),
-                child: snackbar.withCustomCallback(callback: _onDismiss),
-              ),
+              builder: (context) =>
+                  snackbar.withCustomCallback(callback: _onDismiss),
             ),
           ),
         );
@@ -131,7 +142,7 @@ class MaterialSnackBarMessengerState {
   /// A faster way to display a material snackbar.
   ///
   ///  It displays a [MaterialSnackbar] with a default [Text] and
-  /// a [TextButton] as a [action].
+  /// a [TextButton] as an [action].
   ///
   /// [content] can't be `null`.
   ///
@@ -155,5 +166,12 @@ class MaterialSnackBarMessengerState {
             : null,
       ),
     );
+  }
+
+  /// Empty all snackbars in the snackbar Queue.
+  ///
+  /// When a snackbar is currently displayed, it won't be affected.
+  void emptyQueue() {
+    MaterialSnackBarMessenger.snackbarQueue = [];
   }
 }

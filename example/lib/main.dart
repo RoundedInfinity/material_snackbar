@@ -99,13 +99,12 @@ class _MyAppState extends State<MyApp> {
                         duration: Duration(seconds: 6),
                         content: Text(
                           'Before we start, however, keep in mind that although fun and learning are the primary goals of all enrichment center activities, serious injuries may occur.',
-                          maxLines: 1,
                         ),
                       ),
                     );
                   },
                 ),
-                TextButton(
+                ElevatedButton(
                   child: Text('Show snack'),
                   onPressed: () {
                     MaterialSnackBarMessenger.of(context).showSnackBar(
@@ -123,11 +122,27 @@ class _MyAppState extends State<MyApp> {
                     );
                   },
                 ),
-                TextButton(
+                ElevatedButton(
                   child: Text('Show snack (the fast way)'),
                   onPressed: () {
                     MaterialSnackBarMessenger.of(context).snack(
                       'I am speed',
+                      actionText: 'RETRY',
+                      onAction: () => print('Speeeed'),
+                    );
+                  },
+                ),
+                ElevatedButton(
+                  child: Text('Empty queue'),
+                  onPressed: () {
+                    MaterialSnackBarMessenger.of(context).emptyQueue();
+                  },
+                ),
+                ElevatedButton(
+                  child: Text('Platform specific'),
+                  onPressed: () {
+                    MaterialSnackBarMessenger.of(context).snack(
+                      'This item already has the label "cake". You can add a new label',
                       actionText: 'RETRY',
                       onAction: () => print('Speeeed'),
                     );

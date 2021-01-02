@@ -93,25 +93,24 @@ class MaterialSnackBarMessengerState {
     assert(padding != null);
     assert(snackbar != null);
 
-    OverlayEntry _overlay;
+    OverlayEntry _entry;
     var isMobile = Theme.of(context).platform == TargetPlatform.iOS ||
         Theme.of(context).platform == TargetPlatform.android;
 
     alignment ??= isMobile ? Alignment.bottomCenter : Alignment.bottomLeft;
 
     void _onDismiss() {
-      if (_overlay != null) {
-        try {
-          _overlay.remove();
-        } on Exception {
-          return;
-        }
+      if (_entry != null) {
+        assert(_entry != null);
+        _entry?.remove();
+        MaterialSnackBarMessenger.snackbarQueue.remove(_entry);
+        _entry = null;
       }
-      MaterialSnackBarMessenger.snackbarQueue.remove(_overlay);
+
       _queueSnackbars();
     }
 
-    _overlay = OverlayEntry(
+    _entry = OverlayEntry(
       builder: (context) {
         return Align(
           key: UniqueKey(),
@@ -119,15 +118,16 @@ class MaterialSnackBarMessengerState {
           child: Padding(
             padding: padding,
             child: Builder(
-              builder: (context) =>
-                  snackbar.withCustomCallback(callback: _onDismiss),
+              builder: (context) => snackbar.withCustomCallback(
+                callback: _onDismiss,
+              ),
             ),
           ),
         );
       },
     );
 
-    MaterialSnackBarMessenger.snackbarQueue.add(_overlay);
+    MaterialSnackBarMessenger.snackbarQueue.add(_entry);
     if (MaterialSnackBarMessenger.snackbarQueue.length == 1) {
       Overlay.of(context).insert(MaterialSnackBarMessenger.snackbarQueue.first);
     }
@@ -173,5 +173,25 @@ class MaterialSnackBarMessengerState {
   /// When a snackbar is currently displayed, it won't be affected.
   void emptyQueue() {
     MaterialSnackBarMessenger.snackbarQueue = [];
+  }
+
+//TODO: NOT WORKING FIX!
+  // ignore: unused_element
+  void _removeCurrentSnackbar() {
+    var overlay = MaterialSnackBarMessenger.snackbarQueue.first;
+    var align = overlay.builder(context);
+    if (align is Align) {
+      print('yee');
+      var padding = align.child;
+      if (padding is Padding) {
+        print('yee');
+        var builder = padding.child;
+        if (builder is Builder) {
+          print('yee');
+          var snackbar = builder.builder(context);
+          if (snackbar is MaterialSnackbar) {}
+        }
+      }
+    }
   }
 }

@@ -1,8 +1,7 @@
 name: material_snackbar
 description: A new flutter plugin project.
-version: 0.0.1
-author: null
-homepage: null
+version: 0.8.10
+author: roundedinfinity
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

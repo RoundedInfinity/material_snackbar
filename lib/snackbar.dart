@@ -1,6 +1,9 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
+typedef CloseActionBuilder = Widget Function(
+    BuildContext context, VoidCallback close);
+
 /// A Widget that follows the [newest material snackbar design.](https://material.io/components/snackbars#full-screen-dialog). To display this snackbar use the `MaterialSnackBarMessenger`.
 ///
 /// See also:
@@ -8,6 +11,8 @@ import 'package:flutter/material.dart';
 /// - [MaterialSnackBarMessenger.of(context).showSnackBar()]
 /// - [MaterialSnackbar()]
 class MaterialSnackbar extends StatefulWidget {
+  final CloseActionBuilder closeActionBuilder;
+
   /// The `Widget` located in this [MaterialSnackbar].
   ///
   /// Can't be `null`.
@@ -45,7 +50,7 @@ class MaterialSnackbar extends StatefulWidget {
 
   /// A Widget that follows the [newest material snackbar design.](https://material.io/components/snackbars#full-screen-dialog). To display this snackbar use the `MaterialSnackBarMessenger`.
   ///
-  /// The time this snackbar stays is determend by the [duration].
+  /// The time this snackbar stays on the screen is determend by the [duration].
   ///
   /// The [content] widget, typically a `Text` widget,
   ///  is located in the snackbar.
@@ -98,6 +103,7 @@ class MaterialSnackbar extends StatefulWidget {
   const MaterialSnackbar({
     Key key,
     this.content,
+    this.closeActionBuilder,
     this.action,
     this.duration = const Duration(seconds: 2),
     this.onDismiss,
@@ -119,6 +125,7 @@ class MaterialSnackbar extends StatefulWidget {
   /// Copy this snackbar and add a callback before [onDismiss] is called.
   MaterialSnackbar withCustomCallback({
     VoidCallback callback,
+    GlobalKey<_MaterialSnackbarState> state,
   }) {
     return MaterialSnackbar(
       content: content,
@@ -129,6 +136,7 @@ class MaterialSnackbar extends StatefulWidget {
       exitCurve: exitCurve,
       exitDuration: exitDuration,
       theme: theme,
+      closeActionBuilder: closeActionBuilder,
       onDismiss: () {
         if (callback != null) callback();
         if (onDismiss != null) onDismiss();
@@ -140,7 +148,6 @@ class MaterialSnackbar extends StatefulWidget {
 class _MaterialSnackbarState extends State<MaterialSnackbar>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
-
   @override
   void initState() {
     super.initState();
@@ -216,14 +223,19 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (widget.action != null)
+                  if (widget.closeActionBuilder != null ||
+                      widget.action != null)
                     TextButtonTheme(
                       data: TextButtonThemeData(
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.symmetric(horizontal: 16.0),
                         ),
                       ),
-                      child: widget.action,
+                      child: widget.action ??
+                          widget.closeActionBuilder(
+                            context,
+                            hideSnackbar,
+                          ),
                     ),
                 ],
               ),

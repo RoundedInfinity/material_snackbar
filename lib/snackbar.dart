@@ -17,7 +17,7 @@ class MaterialSnackbar extends StatefulWidget {
   /// calling `close` from the builder.
   ///
   /// When [action] has a value, it will be displayed instead of this.
-  final CloseActionBuilder closeActionBuilder;
+  final CloseActionBuilder actionBuilder;
 
   /// The `Widget` located in this [MaterialSnackbar].
   ///
@@ -109,7 +109,7 @@ class MaterialSnackbar extends StatefulWidget {
   const MaterialSnackbar({
     Key key,
     this.content,
-    this.closeActionBuilder,
+    this.actionBuilder,
     this.action,
     this.duration = const Duration(seconds: 2),
     this.onDismiss,
@@ -142,7 +142,7 @@ class MaterialSnackbar extends StatefulWidget {
       exitCurve: exitCurve,
       exitDuration: exitDuration,
       theme: theme,
-      closeActionBuilder: closeActionBuilder,
+      actionBuilder: actionBuilder,
       onDismiss: () {
         if (callback != null) callback();
         if (onDismiss != null) onDismiss();
@@ -229,8 +229,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (widget.closeActionBuilder != null ||
-                      widget.action != null)
+                  if (widget.actionBuilder != null || widget.action != null)
                     TextButtonTheme(
                       data: TextButtonThemeData(
                         style: TextButton.styleFrom(
@@ -238,7 +237,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
                         ),
                       ),
                       child: widget.action ??
-                          widget.closeActionBuilder(
+                          widget.actionBuilder(
                             context,
                             hideSnackbar,
                           ),

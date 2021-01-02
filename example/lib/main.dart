@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:material_snackbar/material_snackbar.dart';
-import 'package:material_snackbar/snackbar.dart';
 
 void main() {
   runApp(MyApp());
@@ -80,7 +79,7 @@ class _MyAppState extends State<MyApp> {
                         MaterialSnackBarMessenger.of(context).showSnackBar(
                           snackbar: MaterialSnackbar(
                             content: Text('Deleted 142 important documents.'),
-                            closeActionBuilder: (context, close) => TextButton(
+                            actionBuilder: (context, close) => TextButton(
                               child: Text('DISMISS'),
                               onPressed: close,
                             ),

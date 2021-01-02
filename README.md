@@ -1,15 +1,67 @@
-# material_snackbar
+# Material snackbar
 
-A new flutter plugin project.
+A flutter plugin for displaying snackbars with the newest material design on desktop and mobile.
 
-## Getting Started
+[BADGES] 
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+[VIDEO]
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Features 
 
+- [Material design (with material motion)](https://material.io/components/snackbars).
+- Designed for **desktop** and **mobile.**
+- **Snackbar queue** for stacking snackbars.
+
+## Usage 
+
+First, add the `material_snackbar` package to your [pubspec dependencies](https://flutter.dev/docs/development/packages-and-plugins/using-packages).
+
+To import  `material_snackbar`: 
+
+```dart
+import 'package:material_snackbar/material_snackbar.dart';
+```
+
+For displaying a material snackbar you need to obtain the [MaterialSnackbarMessengerState] of the current [BuildContext] by using [MaterialSnackBarMessenger.of].
+
+### Material snackbar
+
+Here is an example how to display a simple snackbar.
+
+```dart
+MaterialSnackBarMessenger.of(context).showSnackBar(
+  snackbar: MaterialSnackbar(
+    content: Text('Deleted 142 important documents'),
+  ),
+);
+```
+
+Use the `actionBuilder` to add an action button that can dismiss the snackbar.
+
+```dart
+MaterialSnackBarMessenger.of(context).showSnackBar(
+  snackbar: MaterialSnackbar(
+    content: Text('Deleted 142 important documents.'),
+    actionBuilder: (context, close) => TextButton(
+      child: Text('DISMISS'),
+      onPressed: close,
+    ),
+  ),
+);
+```
+
+### Snackbar queue 
+
+When you show multiple snackbars they are not displayed all at one time. They are added to the _snackbar queue_  and are displayed individually after the previous shown snackbar.
+
+[VIDEO]
+
+To empty the _snackbar queue_ use:
+
+```dart
+MaterialSnackBarMessenger.of(context).emptyQueue();
+```
+
+
+
+For more examples see the example tab ➡

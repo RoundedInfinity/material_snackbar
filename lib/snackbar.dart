@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
+///Builder for material snackbars with the ability to dismiss the snackbar.
 typedef CloseActionBuilder = Widget Function(
     BuildContext context, VoidCallback close);
 
@@ -11,6 +12,11 @@ typedef CloseActionBuilder = Widget Function(
 /// - [MaterialSnackBarMessenger.of(context).showSnackBar()]
 /// - [MaterialSnackbar()]
 class MaterialSnackbar extends StatefulWidget {
+  /// The [action] located on the right,
+  /// but with the ability to dismiss the snackbar by
+  /// calling `close` from the builder.
+  ///
+  /// When [action] has a value, it will be displayed instead of this.
   final CloseActionBuilder closeActionBuilder;
 
   /// The `Widget` located in this [MaterialSnackbar].
@@ -245,7 +251,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
       ),
     );
 
-// Don't use a animation if accessibleNavigation navigation is activated.
+// Don't use an animation if accessible navigation is activated.
     return MediaQuery.of(context).accessibleNavigation ?? false
         ? _snackbar
         : FadeScaleTransition(

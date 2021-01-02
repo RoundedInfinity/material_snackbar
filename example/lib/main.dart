@@ -98,6 +98,7 @@ class _MyAppState extends State<MyApp> {
                       onPressed: () {
                         MaterialSnackBarMessenger.of(context).showSnackBar(
                           snackbar: MaterialSnackbar(
+                            duration: Duration(seconds: 1),
                             content: Text('Hey I just met you,'),
                           ),
                         );
@@ -108,7 +109,8 @@ class _MyAppState extends State<MyApp> {
                       onPressed: () {
                         MaterialSnackBarMessenger.of(context).showSnackBar(
                           snackbar: MaterialSnackbar(
-                            content: Text('And this is crazy.'),
+                            duration: Duration(seconds: 1),
+                            content: Text('and this is crazy.'),
                           ),
                         );
                       },
@@ -118,8 +120,19 @@ class _MyAppState extends State<MyApp> {
                       onPressed: () {
                         MaterialSnackBarMessenger.of(context).showSnackBar(
                           snackbar: MaterialSnackbar(
-                            content:
-                                Text('But here\'s my number, so call me maybe'),
+                            duration: Duration(seconds: 1),
+                            content: Text('But here\'s my number, '),
+                          ),
+                        );
+                      },
+                    ),
+                    ElevatedButton(
+                      child: Text('and 3'),
+                      onPressed: () {
+                        MaterialSnackBarMessenger.of(context).showSnackBar(
+                          snackbar: MaterialSnackbar(
+                            duration: Duration(seconds: 1),
+                            content: Text('so call me maybe'),
                           ),
                         );
                       },
@@ -154,7 +167,7 @@ class _MyAppState extends State<MyApp> {
                     MaterialSnackBarMessenger.of(context).showSnackBar(
                       alignment: Alignment.bottomLeft,
                       snackbar: MaterialSnackbar(
-                        // A longer duration so you can read it before it disappears.
+                        // A longer duration so you can read the text  before it disappears.
                         duration: Duration(seconds: 6),
                         content: Text(
                           'Before we start, however, keep in mind that although fun and learning are the primary goals of all enrichment center activities, serious injuries may occur.',

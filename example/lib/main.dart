@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(brightness: Brightness.light),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Snackbar example app'),
         ),
         body: Builder(
           builder: (context) => Center(
@@ -40,8 +40,7 @@ class _MyAppState extends State<MyApp> {
                       ),
                     );
                   },
-                ),
-                //With custom alignment.
+                ), //With custom alignment.
                 ElevatedButton(
                   child: Text('Centered material snackbar'),
                   onPressed: () {
@@ -93,7 +92,7 @@ class _MyAppState extends State<MyApp> {
                   alignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      child: Text('Snackbar 1'),
+                      child: Text('Snackbar quere 1'),
                       onPressed: () {
                         MaterialSnackBarMessenger.of(context).showSnackBar(
                           snackbar: MaterialSnackbar(
@@ -201,12 +200,31 @@ class _MyAppState extends State<MyApp> {
                   child: Text('snack (the fast way)'),
                   onPressed: () {
                     MaterialSnackBarMessenger.of(context).snack(
-                      'I am speed',
+                      'I\'m burnin\' through the sky, yeah',
                       actionText: 'RETRY',
                       onAction: () => print('Speeeed'),
                     );
                   },
                 ),
+
+                // Use the snackbarTheme to customize the SnackBar.
+                Theme(
+                    data: ThemeData(
+                      snackBarTheme:
+                          SnackBarThemeData(backgroundColor: Colors.yellow),
+                    ),
+                    child: Builder(
+                      builder: (context) => ElevatedButton(
+                        child: Text('use a theme'),
+                        onPressed: () {
+                          MaterialSnackBarMessenger.of(context).snack(
+                            'That\'s why they call me Mister Fahrenheit.',
+                            actionText: 'RETRY',
+                            onAction: () => print('Speeeed'),
+                          );
+                        },
+                      ),
+                    )),
                 // Removes all snackbar in the snackbar queue.
                 ElevatedButton(
                   child: Text('Empty queue'),

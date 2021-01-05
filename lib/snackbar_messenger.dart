@@ -101,9 +101,10 @@ class MaterialSnackBarMessengerState {
 
     void _onDismiss() {
       if (_entry != null) {
+        MaterialSnackBarMessenger.snackbarQueue.remove(_entry);
         assert(_entry != null);
         _entry?.remove();
-        MaterialSnackBarMessenger.snackbarQueue.remove(_entry);
+
         _entry = null;
       }
 
@@ -154,14 +155,23 @@ class MaterialSnackBarMessengerState {
   ///  onAction: () => print('Speeeed'),
   ///);
   /// ```
-  void snack(String content, {String actionText, VoidCallback onAction}) {
+  void snack(
+    String content, {
+    String actionText,
+    VoidCallback onAction,
+    bool actionDismissesSnack = true,
+  }) {
     showSnackBar(
       snackbar: MaterialSnackbar(
         content: Text(content),
-        action: onAction != null
+        theme: Theme.of(context).snackBarTheme,
+        actionBuilder: (context, close) => onAction != null
             ? TextButton(
                 child: Text(actionText),
-                onPressed: onAction ?? () {},
+                onPressed: () {
+                  onAction();
+                  close();
+                },
               )
             : null,
       ),

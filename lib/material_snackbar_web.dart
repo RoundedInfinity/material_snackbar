@@ -10,11 +10,11 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 /// A web implementation of the MaterialSnackbar plugin.
 class MaterialSnackbarWeb {
+  /// Registers the plugin.
   static void registerWith(Registrar registrar) {
-    final MethodChannel channel = MethodChannel(
+    final channel = MethodChannel(
       'material_snackbar',
       const StandardMethodCodec(),
-      registrar.messenger,
     );
 
     final pluginInstance = MaterialSnackbarWeb();
@@ -32,7 +32,8 @@ class MaterialSnackbarWeb {
       default:
         throw PlatformException(
           code: 'Unimplemented',
-          details: 'material_snackbar for web doesn\'t implement \'${call.method}\'',
+          details:
+              'material_snackbar for web doesn\'t implement \'${call.method}\'',
         );
     }
   }

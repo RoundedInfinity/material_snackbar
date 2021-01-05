@@ -1,7 +1,7 @@
 name: material_snackbar
 description: A flutter plugin for displaying snackbars with the newest material design on desktop and mobile.
 version: 1.0.0
-author: roundedinfinity
+repository: https://github.com/RoundedInfinity/material_snackbar
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

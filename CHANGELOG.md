@@ -1,3 +1,7 @@
-## 0.0.1
+## 0.0.1 
 
-* TODO: Describe initial release.
+* Added Project
+
+## 1.0.0
+
+* first release 

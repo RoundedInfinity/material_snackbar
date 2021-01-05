@@ -54,7 +54,6 @@ MaterialSnackBarMessenger.of(context).showSnackBar(
 
 When you show multiple snackbars they are not displayed all at one time. They are added to the _snackbar queue_  and are displayed individually after the previously shown snackbar.
 
-[VIDEO]
 
 To empty the _snackbar queue_ use:
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'route.dart';
 import 'snackbar.dart';
 
 // ignore: avoid_classes_with_only_static_members
@@ -94,6 +96,11 @@ class MaterialSnackBarMessengerState {
   /// To dismiss the snackbar use
   /// the close function of the [actionBuilder].
   /// __Never__ use `Navigator.of(context).pop()`.
+  ///
+  /// See also:
+  /// - [MaterialSnackBarMessenger.of(context).snack]
+  /// - [MaterialSnackbar]
+  /// - [SnackbarRoute]
   void showSnackBar({
     @required MaterialSnackbar snackbar,
     EdgeInsetsGeometry padding = const EdgeInsets.all(20.0),

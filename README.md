@@ -36,7 +36,7 @@ MaterialSnackBarMessenger.of(context).showSnackBar(
 );
 ```
 
-Use the `actionBuilder` to add an action button that can dismiss the snackbar.
+Use  `actionBuilder` to add an action button that can dismiss the snackbar.
 
 ```dart
 MaterialSnackBarMessenger.of(context).showSnackBar(
@@ -53,6 +53,8 @@ MaterialSnackBarMessenger.of(context).showSnackBar(
 ### Snackbar queue
 
 When you show multiple snackbars they are not displayed all at one time. They are added to the _snackbar queue_  and are displayed individually after the previously shown snackbar.
+
+![snackbar queue](https://i.imgur.com/BfrED6E.gif)
 
 
 To empty the _snackbar queue_ use:

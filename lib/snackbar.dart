@@ -31,7 +31,7 @@ class MaterialSnackbar extends StatefulWidget {
   final Widget action;
 
   /// The time this snackbar stays on the screen.
-  ///  Should be about 2 to 10 seconds.
+  /// Should be about 2 to 10 seconds according to the material design studies.
   ///
   /// Can't be `null`.
   final Duration duration;
@@ -48,7 +48,7 @@ class MaterialSnackbar extends StatefulWidget {
   /// The `Curve` this snackbar uses to fade out.
   final Curve exitCurve;
 
-  /// Called after the snackbar was dismissed.
+  /// Called __after__ the snackbar was dismissed.
   final VoidCallback onDismiss;
 
   /// The [SnackBarThemeData] to apply to this widget.
@@ -125,6 +125,7 @@ class MaterialSnackbar extends StatefulWidget {
         assert(enterCurve != null),
         assert(exitCurve != null),
         super(key: key);
+
   @override
   _MaterialSnackbarState createState() => _MaterialSnackbarState();
 
@@ -207,6 +208,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
 
     var maxHeight = isMobile ? 144.0 : 168.0;
 
+    //init function
     _showAndHideSnackbar();
 
     var _snackbar = Container(
@@ -270,22 +272,5 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
                   : widget.exitCurve,
             ),
           );
-  }
-}
-
-/// Used to push a `MaterialSnackbar`.
-class SnackbarRoute extends OverlayRoute {
-  /// The entry that should be pushed.
-  final OverlayEntry entry;
-
-  /// Used to push a `MaterialSnackbar`.
-  ///
-  /// The MaterialSnackbarMessenger will call `Navigator.pop()`
-  /// again when it wasn't access from the snackbar.
-  SnackbarRoute(this.entry);
-
-  @override
-  Iterable<OverlayEntry> createOverlayEntries() {
-    return [entry];
   }
 }

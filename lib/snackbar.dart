@@ -172,6 +172,10 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
     super.dispose();
   }
 
+  void pop() async {
+    Navigator.of(context).pop(true);
+  }
+
   Future<void> _showAndHideSnackbar() async {
     await _controller.forward();
     await Future.delayed(widget.duration);
@@ -180,9 +184,13 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
 
   /// Hide this snackbar and with the fade out animation.
   Future<void> hideSnackbar() async {
-    if (_controller.isCompleted) await _controller.reverse().orCancel;
-
-    widget.onDismiss();
+    if (_controller.isCompleted && mounted) {
+      await _controller.reverse().orCancel;
+    }
+    if (mounted) {
+      pop();
+      widget.onDismiss();
+    }
   }
 
   @override
@@ -262,5 +270,16 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
                   : widget.exitCurve,
             ),
           );
+  }
+}
+
+class SnackbarRoute extends OverlayRoute {
+  final OverlayEntry entry;
+
+  SnackbarRoute(this.entry);
+
+  @override
+  Iterable<OverlayEntry> createOverlayEntries() {
+    return [entry];
   }
 }

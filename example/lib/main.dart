@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:material_snackbar/material_snackbar.dart';
 
+import 'more.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -209,22 +211,23 @@ class _MyAppState extends State<MyApp> {
 
                 // Use the snackbarTheme to customize the SnackBar.
                 Theme(
-                    data: ThemeData(
-                      snackBarTheme:
-                          SnackBarThemeData(backgroundColor: Colors.yellow),
+                  data: ThemeData(
+                    snackBarTheme:
+                        SnackBarThemeData(backgroundColor: Colors.yellow),
+                  ),
+                  child: Builder(
+                    builder: (context) => ElevatedButton(
+                      child: Text('use a theme'),
+                      onPressed: () {
+                        MaterialSnackBarMessenger.of(context).snack(
+                          'That\'s why they call me Mister Fahrenheit.',
+                          actionText: 'RETRY',
+                          onAction: () => print('Speeeed'),
+                        );
+                      },
                     ),
-                    child: Builder(
-                      builder: (context) => ElevatedButton(
-                        child: Text('use a theme'),
-                        onPressed: () {
-                          MaterialSnackBarMessenger.of(context).snack(
-                            'That\'s why they call me Mister Fahrenheit.',
-                            actionText: 'RETRY',
-                            onAction: () => print('Speeeed'),
-                          );
-                        },
-                      ),
-                    )),
+                  ),
+                ),
                 // Removes all snackbar in the snackbar queue.
                 ElevatedButton(
                   child: Text('Empty queue'),
@@ -232,6 +235,15 @@ class _MyAppState extends State<MyApp> {
                     MaterialSnackBarMessenger.of(context).emptyQueue();
                   },
                 ),
+                TextButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => MorePage(),
+                    ),
+                  ),
+                  icon: Icon(Icons.arrow_forward_outlined),
+                  label: Text('More examples'),
+                )
               ],
             ),
           ),

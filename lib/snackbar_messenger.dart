@@ -3,7 +3,7 @@ import 'snackbar.dart';
 
 // ignore: avoid_classes_with_only_static_members
 /// For displaying material snackbars.
-///  Equivalent of the `ScaffoldMessenger`.
+/// Equivalent of the `ScaffoldMessenger`.
 ///
 /// To display a material snackbar,
 /// obtain the [MaterialSnackbarMessengerState] of the current [BuildContext]
@@ -31,8 +31,8 @@ import 'snackbar.dart';
 
 class MaterialSnackBarMessenger {
   /// The `OverlayEntrys` used for the `MaterialSnackbars` are
-  ///  stored in this List.
-  ///  You should not change this list manually.
+  /// stored in this List.
+  /// You should not change this list manually.
   static List<OverlayEntry> snackbarQueue = [];
 
   /// Passes the [BuildContext] to the [MaterialSnackBarMessengerState].
@@ -85,6 +85,15 @@ class MaterialSnackBarMessengerState {
   /// );
   ///
   /// ```
+  ///
+  /// This uses the `Navigator.of(context)` and adds a `Route`
+  /// to display the snackbar.
+  ///
+  /// ### Dismissing the snackbar
+  ///
+  /// To dismiss the snackbar use
+  /// the close function of the [actionBuilder].
+  /// __Never__ use `Navigator.of(context).pop()`.
   void showSnackBar({
     @required MaterialSnackbar snackbar,
     EdgeInsetsGeometry padding = const EdgeInsets.all(20.0),
@@ -100,13 +109,11 @@ class MaterialSnackBarMessengerState {
     alignment ??= isMobile ? Alignment.bottomCenter : Alignment.bottomLeft;
 
     void _onDismiss() {
-      if (_entry != null) {
+      if (MaterialSnackBarMessenger.snackbarQueue.isNotEmpty &&
+          _entry != null) {
         MaterialSnackBarMessenger.snackbarQueue.remove(_entry);
-        assert(_entry != null);
-        _entry?.remove();
-
-        _entry = null;
       }
+      //MaterialSnackBarMessenger.snackbarQueue.remove(_entry);
 
       _queueSnackbars();
     }
@@ -129,14 +136,19 @@ class MaterialSnackBarMessengerState {
     );
 
     MaterialSnackBarMessenger.snackbarQueue.add(_entry);
-    if (MaterialSnackBarMessenger.snackbarQueue.length == 1) {
-      Overlay.of(context).insert(MaterialSnackBarMessenger.snackbarQueue.first);
-    }
+    if (MaterialSnackBarMessenger.snackbarQueue.length == 1) _pushSnackbar();
   }
 
   void _queueSnackbars() {
-    if (MaterialSnackBarMessenger.snackbarQueue.isNotEmpty) {
-      Overlay.of(context).insert(MaterialSnackBarMessenger.snackbarQueue.first);
+    if (MaterialSnackBarMessenger.snackbarQueue.isNotEmpty) _pushSnackbar();
+  }
+
+  Future<void> _pushSnackbar() async {
+    var wasDismissed = await Navigator.maybeOf(context)
+        .push(SnackbarRoute(MaterialSnackBarMessenger.snackbarQueue.first));
+    if (wasDismissed == null) {
+      Navigator.of(context).maybePop();
+      emptyQueue();
     }
   }
 
@@ -183,25 +195,5 @@ class MaterialSnackBarMessengerState {
   /// When a snackbar is currently displayed, it won't be affected.
   void emptyQueue() {
     MaterialSnackBarMessenger.snackbarQueue = [];
-  }
-
-//TODO: NOT WORKING FIX!
-  // ignore: unused_element
-  void _removeCurrentSnackbar() {
-    var overlay = MaterialSnackBarMessenger.snackbarQueue.first;
-    var align = overlay.builder(context);
-    if (align is Align) {
-      print('yee');
-      var padding = align.child;
-      if (padding is Padding) {
-        print('yee');
-        var builder = padding.child;
-        if (builder is Builder) {
-          print('yee');
-          var snackbar = builder.builder(context);
-          if (snackbar is MaterialSnackbar) {}
-        }
-      }
-    }
   }
 }

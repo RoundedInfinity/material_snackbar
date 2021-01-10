@@ -273,9 +273,15 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
   }
 }
 
+/// Used to push a `MaterialSnackbar`.
 class SnackbarRoute extends OverlayRoute {
+  /// The entry that should be pushed.
   final OverlayEntry entry;
 
+  /// Used to push a `MaterialSnackbar`.
+  ///
+  /// The MaterialSnackbarMessenger will call `Navigator.pop()`
+  /// again when it wasn't access from the snackbar.
   SnackbarRoute(this.entry);
 
   @override

@@ -18,29 +18,33 @@ class _MorePageState extends State<MorePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () async {
-                  setState(() {});
-                },
-                child: Text('Yeee'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  MaterialSnackBarMessenger.of(context).showSnackBar(
-                    snackbar: MaterialSnackbar(
-                      onDismiss: () {},
-                      content: Text('Deleted 142 important documents.'),
-                      actionBuilder: (context, close) => TextButton(
-                        child: Text('DISMISS'),
-                        onPressed: close,
+              Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    MaterialSnackBarMessenger.of(context).showSnackBar(
+                      snackbar: MaterialSnackbar(
+                        onDismiss: () {},
+                        content: Text('Deleted 142 important documents.'),
+                        actionBuilder: (context, close) => TextButton(
+                          child: Text('DISMISS'),
+                          onPressed: close,
+                        ),
                       ),
-                    ),
-                  );
-                },
-                child: Text('Yeee'),
-              ),
+                    );
+                  },
+                  child: Text('Yeee'),
+                ),
+              )
             ],
           ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.work_outline), label: 'Work'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined), label: 'Home'),
+          ],
         ),
       ),
     );

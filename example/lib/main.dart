@@ -167,7 +167,7 @@ class _MyAppState extends State<MyApp> {
                     MaterialSnackBarMessenger.of(context).showSnackBar(
                       alignment: Alignment.bottomLeft,
                       snackbar: MaterialSnackbar(
-                        // A longer duration so you can read the text  before it disappears.
+                        // A longer duration so you can read the text before it disappears.
                         duration: Duration(seconds: 6),
                         content: Text(
                           'Before we start, however, keep in mind that although fun and learning are the primary goals of all enrichment center activities, serious injuries may occur.',

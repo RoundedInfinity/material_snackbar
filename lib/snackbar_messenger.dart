@@ -61,7 +61,7 @@ class MaterialSnackBarMessengerState {
 
   /// Display a [MaterialSnackbar] using the [newest material design.](https://material.io/components/snackbars#full-screen-dialog).
   ///
-  /// [snackbar] and [padding] can’t be null.
+  /// [snackbar] can’t be null.
   ///
   /// [alignment] defaults to `Aligment.bottomCenter` on android and iOS
   ///  and `Aligment.bottomLeft` on desktop.
@@ -70,6 +70,10 @@ class MaterialSnackBarMessengerState {
   /// this [snackbar] gets added to the `snackbarQueue`
   /// and will be displayed when it is the only snackbar left in the queue.
   ///
+  /// When [padding] is null it defaults to `EdgeInsets.all(20.0)`.
+  /// When theres a `BottomNavigationBar` or `BottomAppBar` in the
+  /// current `Scaffold.of(context)` `kBottomNavigationBarHeight`
+  /// is added to the bottom of the padding.
   /// Here are some examples:
   /// ```dart
   /// // Just shows a material snackbar.
@@ -103,10 +107,9 @@ class MaterialSnackBarMessengerState {
   /// - [SnackbarRoute]
   void showSnackBar({
     @required MaterialSnackbar snackbar,
-    EdgeInsetsGeometry padding = const EdgeInsets.all(20.0),
+    EdgeInsetsGeometry padding,
     Alignment alignment,
   }) {
-    assert(padding != null);
     assert(snackbar != null);
 
     OverlayEntry _entry;
@@ -115,12 +118,17 @@ class MaterialSnackBarMessengerState {
 
     alignment ??= isMobile ? Alignment.bottomCenter : Alignment.bottomLeft;
 
+    if (padding == null) {
+      padding = const EdgeInsets.all(20.0);
+      padding = padding.add(EdgeInsets.only(bottom: _getBottomComponents()));
+    }
+    assert(padding != null);
+
     void _onDismiss() {
       if (MaterialSnackBarMessenger.snackbarQueue.isNotEmpty &&
           _entry != null) {
         MaterialSnackBarMessenger.snackbarQueue.remove(_entry);
       }
-      //MaterialSnackBarMessenger.snackbarQueue.remove(_entry);
 
       _queueSnackbars();
     }
@@ -157,6 +165,13 @@ class MaterialSnackBarMessengerState {
       Navigator.of(context).maybePop();
       emptyQueue();
     }
+  }
+
+  double _getBottomComponents() {
+    if (Scaffold.of(context).widget.bottomNavigationBar != null) {
+      return kBottomNavigationBarHeight;
+    }
+    return 0;
   }
 
   /// A faster way to display a material snackbar.

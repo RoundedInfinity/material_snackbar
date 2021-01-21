@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:material_snackbar/snackbar_messenger.dart';
 
 ///Builder for material snackbars with the ability to dismiss the snackbar.
 typedef CloseActionBuilder = Widget Function(
@@ -159,6 +160,10 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => MaterialSnackBarMessenger.snackBarVisible = true,
+    );
+
     _controller = AnimationController(
       vsync: this,
       duration: widget.enterDuration,
@@ -169,6 +174,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
   @override
   void dispose() {
     _controller.dispose();
+    MaterialSnackBarMessenger.snackBarVisible = false;
 
     super.dispose();
   }
@@ -189,6 +195,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
       await _controller.reverse().orCancel;
     }
     if (mounted) {
+      MaterialSnackBarMessenger.snackBarVisible = false;
       pop();
       widget.onDismiss();
     }
@@ -261,7 +268,9 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
     );
 
 // Don't use an animation if accessible navigation is activated.
-    return MediaQuery.of(context).accessibleNavigation ?? false
+    return MediaQuery.of(context).accessibleNavigation ||
+                MaterialSnackBarMessenger.snackBarVisible ??
+            false
         ? _snackbar
         : FadeScaleTransition(
             child: _snackbar,

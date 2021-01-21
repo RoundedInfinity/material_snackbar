@@ -22,5 +22,10 @@
 
 ## 1.2.2
 
-- added gif to readme
+- added a gif to the readme
 - small improvements
+
+## 1.3.0
+
+- Fixed snackbar 
+- fixed overflow issue

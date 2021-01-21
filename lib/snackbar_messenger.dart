@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 
 import 'route.dart';
@@ -34,8 +36,14 @@ import 'snackbar.dart';
 class MaterialSnackBarMessenger {
   /// The `OverlayEntrys` used for the `MaterialSnackbars` are
   /// stored in this List.
+  ///
   /// You should not change this list manually.
-  static List<OverlayEntry> snackbarQueue = [];
+  static Queue<OverlayEntry> snackbarQueue = Queue<OverlayEntry>();
+
+  /// `true` when the current snackbar is being displayed.
+  ///
+  /// You should not change this value manually.
+  static bool snackBarVisible = false;
 
   /// Passes the [BuildContext] to the [MaterialSnackBarMessengerState].
   static MaterialSnackBarMessengerState of(BuildContext context) =>
@@ -216,6 +224,6 @@ class MaterialSnackBarMessengerState {
   ///
   /// When a snackbar is currently displayed, it won't be affected.
   void emptyQueue() {
-    MaterialSnackBarMessenger.snackbarQueue = [];
+    MaterialSnackBarMessenger.snackbarQueue.clear();
   }
 }

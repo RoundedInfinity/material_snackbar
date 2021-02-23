@@ -69,8 +69,6 @@ class MaterialSnackBarMessengerState {
 
   /// Display a [MaterialSnackbar] using the [newest material design.](https://material.io/components/snackbars#full-screen-dialog).
   ///
-  /// [snackbar] can’t be null.
-  ///
   /// [alignment] defaults to `Aligment.bottomCenter` on android and iOS
   ///  and `Aligment.bottomLeft` on desktop.
   ///
@@ -114,25 +112,22 @@ class MaterialSnackBarMessengerState {
   /// - [MaterialSnackbar]
   /// - [SnackbarRoute]
   void showSnackBar({
-    @required MaterialSnackbar snackbar,
-    EdgeInsetsGeometry padding,
-    Alignment alignment,
+    required MaterialSnackbar snackbar,
+    EdgeInsetsGeometry? padding,
+    Alignment? alignment,
   }) {
-    assert(snackbar != null);
+    OverlayEntry? _entry;
 
-    OverlayEntry _entry;
-    var isMobile = Theme.of(context).platform == TargetPlatform.iOS ||
+    final isMobile = Theme.of(context).platform == TargetPlatform.iOS ||
         Theme.of(context).platform == TargetPlatform.android;
 
     alignment ??= isMobile ? Alignment.bottomCenter : Alignment.bottomLeft;
 
-    if (padding == null) {
-      padding = const EdgeInsets.all(20.0);
-      padding = padding.add(EdgeInsets.only(bottom: _getBottomComponents()));
-    }
-    assert(padding != null);
+    padding ??= const EdgeInsets.all(20.0).add(
+      EdgeInsets.only(bottom: _getBottomComponentHeight()),
+    );
 
-    void _onDismiss() {
+    void _removeFromQueue() {
       if (MaterialSnackBarMessenger.snackbarQueue.isNotEmpty &&
           _entry != null) {
         MaterialSnackBarMessenger.snackbarQueue.remove(_entry);
@@ -145,12 +140,12 @@ class MaterialSnackBarMessengerState {
       builder: (context) {
         return Align(
           key: UniqueKey(),
-          alignment: alignment,
+          alignment: alignment!,
           child: Padding(
-            padding: padding,
+            padding: padding!,
             child: Builder(
               builder: (context) => snackbar.withCustomCallback(
-                callback: _onDismiss,
+                callback: _removeFromQueue,
               ),
             ),
           ),
@@ -167,15 +162,15 @@ class MaterialSnackBarMessengerState {
   }
 
   Future<void> _pushSnackbar() async {
-    var wasDismissed = await Navigator.maybeOf(context)
+    final returnData = await Navigator.maybeOf(context)!
         .push(SnackbarRoute(MaterialSnackBarMessenger.snackbarQueue.first));
-    if (wasDismissed == null) {
+    if (returnData == null) {
       Navigator.of(context).maybePop();
       emptyQueue();
     }
   }
 
-  double _getBottomComponents() {
+  double _getBottomComponentHeight() {
     if (Scaffold.of(context).widget.bottomNavigationBar != null) {
       return kBottomNavigationBarHeight;
     }
@@ -187,8 +182,6 @@ class MaterialSnackBarMessengerState {
   ///  It displays a [MaterialSnackbar] with a default [Text] and
   /// a [TextButton] as an [action].
   ///
-  /// [content] can't be `null`.
-  ///
   /// Example:
   /// ```
   ///MaterialSnackBarMessenger.of(context).snack(
@@ -199,8 +192,8 @@ class MaterialSnackBarMessengerState {
   /// ```
   void snack(
     String content, {
-    String actionText,
-    VoidCallback onAction,
+    String? actionText,
+    VoidCallback? onAction,
     bool actionDismissesSnack = true,
   }) {
     showSnackBar(
@@ -209,11 +202,11 @@ class MaterialSnackBarMessengerState {
         theme: Theme.of(context).snackBarTheme,
         actionBuilder: (context, close) => onAction != null
             ? TextButton(
-                child: Text(actionText),
                 onPressed: () {
                   onAction();
                   close();
                 },
+                child: Text(actionText!),
               )
             : null,
       ),

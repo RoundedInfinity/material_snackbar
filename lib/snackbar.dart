@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:material_snackbar/snackbar_messenger.dart';
 
 ///Builder for material snackbars with the ability to dismiss the snackbar.
-typedef CloseActionBuilder = Widget Function(
+typedef CloseActionBuilder = Widget? Function(
     BuildContext context, VoidCallback close);
 
 /// A Widget that follows the [newest material snackbar design.](https://material.io/components/snackbars#full-screen-dialog). To display this snackbar use the `MaterialSnackBarMessenger`.
@@ -18,7 +18,7 @@ class MaterialSnackbar extends StatefulWidget {
   /// calling `close` from the builder.
   ///
   /// When [action] has a value, it will be displayed instead of this.
-  final CloseActionBuilder actionBuilder;
+  final CloseActionBuilder? actionBuilder;
 
   /// The `Widget` located in this [MaterialSnackbar].
   ///
@@ -29,7 +29,7 @@ class MaterialSnackbar extends StatefulWidget {
   /// The [action] located on the right.
   ///
   /// Typically a `TextButton`.
-  final Widget action;
+  final Widget? action;
 
   /// The time this snackbar stays on the screen.
   /// Should be about 2 to 10 seconds according to the material design studies.
@@ -50,10 +50,10 @@ class MaterialSnackbar extends StatefulWidget {
   final Curve exitCurve;
 
   /// Called __after__ the snackbar was dismissed.
-  final VoidCallback onDismiss;
+  final VoidCallback? onDismiss;
 
   /// The [SnackBarThemeData] to apply to this widget.
-  final SnackBarThemeData theme;
+  final SnackBarThemeData? theme;
 
   /// A Widget that follows the [newest material snackbar design.](https://material.io/components/snackbars#full-screen-dialog). To display this snackbar use the `MaterialSnackBarMessenger`.
   ///
@@ -108,8 +108,8 @@ class MaterialSnackbar extends StatefulWidget {
   /// - [MaterialSnackBarMessenger]
   /// - [MaterialSnackBarMessenger.of(context).showSnackBar()]
   const MaterialSnackbar({
-    Key key,
-    this.content,
+    Key? key,
+    required this.content,
     this.actionBuilder,
     this.action,
     this.duration = const Duration(seconds: 2),
@@ -119,21 +119,15 @@ class MaterialSnackbar extends StatefulWidget {
     this.enterCurve = Curves.easeOut,
     this.exitCurve = Curves.linear,
     this.theme,
-  })  : assert(content != null),
-        assert(duration != null),
-        assert(enterDuration != null),
-        assert(exitDuration != null),
-        assert(enterCurve != null),
-        assert(exitCurve != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   _MaterialSnackbarState createState() => _MaterialSnackbarState();
 
   /// Copy this snackbar and add a callback before [onDismiss] is called.
   MaterialSnackbar withCustomCallback({
-    VoidCallback callback,
-    GlobalKey<_MaterialSnackbarState> state,
+    VoidCallback? callback,
+    GlobalKey<_MaterialSnackbarState>? state,
   }) {
     return MaterialSnackbar(
       content: content,
@@ -147,7 +141,7 @@ class MaterialSnackbar extends StatefulWidget {
       actionBuilder: actionBuilder,
       onDismiss: () {
         if (callback != null) callback();
-        if (onDismiss != null) onDismiss();
+        if (onDismiss != null) onDismiss!();
       },
     );
   }
@@ -155,12 +149,13 @@ class MaterialSnackbar extends StatefulWidget {
 
 class _MaterialSnackbarState extends State<MaterialSnackbar>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback(
+    // set snackBarVisible to true after build has executed.
+    WidgetsBinding.instance!.addPostFrameCallback(
       (_) => MaterialSnackBarMessenger.snackBarVisible = true,
     );
 
@@ -179,7 +174,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
     super.dispose();
   }
 
-  void pop() async {
+  void pop() {
     Navigator.of(context).pop(true);
   }
 
@@ -189,7 +184,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
     await hideSnackbar();
   }
 
-  /// Hide this snackbar and with the fade out animation.
+  /// Hide this snackbar and with a fade out animation.
   Future<void> hideSnackbar() async {
     if (_controller.isCompleted && mounted) {
       await _controller.reverse().orCancel;
@@ -197,28 +192,28 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
     if (mounted) {
       MaterialSnackBarMessenger.snackBarVisible = false;
       pop();
-      widget.onDismiss();
+      widget.onDismiss!();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var snackBarTheme = widget.theme ?? Theme.of(context).snackBarTheme;
-    var theme = Theme.of(context).brightness == Brightness.dark
+    final snackBarTheme = widget.theme ?? Theme.of(context).snackBarTheme;
+    final theme = Theme.of(context).brightness == Brightness.dark
         ? ThemeData.light()
         : ThemeData.dark();
-    var isMobile = theme.platform == TargetPlatform.iOS ||
+    final isMobile = theme.platform == TargetPlatform.iOS ||
         theme.platform == TargetPlatform.android;
-    var shape = snackBarTheme.shape ??
+    final shape = snackBarTheme.shape ??
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0));
-    var elevation = snackBarTheme.elevation ?? 12;
+    final elevation = snackBarTheme.elevation ?? 12;
 
-    var maxHeight = isMobile ? 144.0 : 168.0;
+    final maxHeight = isMobile ? 144.0 : 168.0;
 
     //init function
     _showAndHideSnackbar();
 
-    var _snackbar = Container(
+    final _snackbar = Container(
       constraints: BoxConstraints(maxHeight: maxHeight, minWidth: 344),
       child: LayoutBuilder(
         builder: (context, constraints) => Theme(
@@ -226,9 +221,9 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
           child: Material(
             shape: shape,
             elevation: elevation,
-            color: snackBarTheme.backgroundColor ?? null,
+            color: snackBarTheme.backgroundColor,
             child: Padding(
-              padding: EdgeInsetsDirectional.only(start: 16, end: 16),
+              padding: const EdgeInsetsDirectional.only(start: 16, end: 16),
               child: Wrap(
                 alignment: WrapAlignment.spaceBetween,
                 crossAxisAlignment: WrapCrossAlignment.center,
@@ -239,25 +234,25 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
                         BoxConstraints(maxWidth: constraints.maxWidth - 32),
                     padding: const EdgeInsets.symmetric(vertical: 14.0),
                     child: DefaultTextStyle(
-                      child: widget.content,
                       style: snackBarTheme.contentTextStyle ??
-                          theme.textTheme.bodyText2,
+                          theme.textTheme.bodyText2!,
                       maxLines: isMobile ? 2 : 1,
                       overflow: TextOverflow.ellipsis,
+                      child: widget.content,
                     ),
                   ),
                   if (widget.actionBuilder != null || widget.action != null)
                     TextButtonTheme(
                       data: TextButtonThemeData(
                         style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         ),
                       ),
                       child: widget.action ??
-                          widget.actionBuilder(
+                          widget.actionBuilder!(
                             context,
                             hideSnackbar,
-                          ),
+                          )!,
                     ),
                 ],
               ),
@@ -269,17 +264,16 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
 
 // Don't use an animation if accessible navigation is activated.
     return MediaQuery.of(context).accessibleNavigation ||
-                MaterialSnackBarMessenger.snackBarVisible ??
-            false
+            MaterialSnackBarMessenger.snackBarVisible
         ? _snackbar
         : FadeScaleTransition(
-            child: _snackbar,
             animation: CurvedAnimation(
               parent: _controller,
               curve: _controller.status == AnimationStatus.forward
                   ? widget.enterCurve
                   : widget.exitCurve,
             ),
+            child: _snackbar,
           );
   }
 }

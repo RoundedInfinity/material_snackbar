@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:material_snackbar/material_snackbar.dart';
 
 // This is used for experimenting.
@@ -21,16 +22,7 @@ class _MorePageState extends State<MorePage> {
               Builder(
                 builder: (context) => ElevatedButton(
                   onPressed: () async {
-                    MaterialSnackBarMessenger.of(context).showSnackBar(
-                      snackbar: MaterialSnackbar(
-                        onDismiss: () {},
-                        content: Text('Deleted 142 important documents.'),
-                        actionBuilder: (context, close) => TextButton(
-                          child: Text('DISMISS'),
-                          onPressed: close,
-                        ),
-                      ),
-                    );
+                    MaterialSnackBarMessenger.of(context).snack('yee');
                   },
                   child: Text('Yeee'),
                 ),

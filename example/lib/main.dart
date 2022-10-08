@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(brightness: Brightness.dark),
+      theme: ThemeData(useMaterial3: true),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Snackbar example app'),

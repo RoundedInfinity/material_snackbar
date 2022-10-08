@@ -34,16 +34,16 @@ import 'snackbar.dart';
 /// ```
 
 class MaterialSnackBarMessenger {
+  /// `true` when the current snackbar is being displayed.
+  ///
+  /// You should not change this value manually.
+  static bool snackBarVisible = false;
+
   /// The `OverlayEntrys` used for the `MaterialSnackbars` are
   /// stored in this List.
   ///
   /// You should not change this list manually.
   static Queue<OverlayEntry> snackbarQueue = Queue<OverlayEntry>();
-
-  /// `true` when the current snackbar is being displayed.
-  ///
-  /// You should not change this value manually.
-  static bool snackBarVisible = false;
 
   /// Passes the [BuildContext] to the [MaterialSnackBarMessengerState].
   static MaterialSnackBarMessengerState of(BuildContext context) =>
@@ -52,9 +52,6 @@ class MaterialSnackBarMessenger {
 
 /// Constructed with [MaterialSnackBarMessenger.of] to manage snackbars.
 class MaterialSnackBarMessengerState {
-  /// [BuildContext] used for getting `Overlay.of(context)`.
-  final BuildContext context;
-
   /// This Object can be used to display material snackbars.
   /// Those are shown with an overlay.
   ///
@@ -66,6 +63,9 @@ class MaterialSnackBarMessengerState {
   /// - [MaterialSnackBarMessenger.of(context).showSnackBar()]
   ///
   MaterialSnackBarMessengerState(this.context);
+
+  /// [BuildContext] used for getting `Overlay.of(context)`.
+  final BuildContext context;
 
   /// Display a [MaterialSnackbar] using the [newest material design.](https://material.io/components/snackbars#full-screen-dialog).
   ///
@@ -123,10 +123,6 @@ class MaterialSnackBarMessengerState {
 
     alignment ??= isMobile ? Alignment.bottomCenter : Alignment.bottomLeft;
 
-    padding ??= const EdgeInsets.all(20.0).add(
-      EdgeInsets.only(bottom: _getBottomComponentHeight()),
-    );
-
     void _removeFromQueue() {
       if (MaterialSnackBarMessenger.snackbarQueue.isNotEmpty &&
           _entry != null) {
@@ -142,7 +138,7 @@ class MaterialSnackBarMessengerState {
           key: UniqueKey(),
           alignment: alignment!,
           child: Padding(
-            padding: padding!,
+            padding: padding ?? const EdgeInsets.all(8),
             child: Builder(
               builder: (context) => snackbar.withCustomCallback(
                 callback: _removeFromQueue,
@@ -155,26 +151,6 @@ class MaterialSnackBarMessengerState {
 
     MaterialSnackBarMessenger.snackbarQueue.add(_entry);
     if (MaterialSnackBarMessenger.snackbarQueue.length == 1) _pushSnackbar();
-  }
-
-  void _queueSnackbars() {
-    if (MaterialSnackBarMessenger.snackbarQueue.isNotEmpty) _pushSnackbar();
-  }
-
-  Future<void> _pushSnackbar() async {
-    final returnData = await Navigator.maybeOf(context)!
-        .push(SnackbarRoute(MaterialSnackBarMessenger.snackbarQueue.first));
-    if (returnData == null) {
-      Navigator.of(context).maybePop();
-      emptyQueue();
-    }
-  }
-
-  double _getBottomComponentHeight() {
-    if (Scaffold.of(context).widget.bottomNavigationBar != null) {
-      return kBottomNavigationBarHeight;
-    }
-    return 0;
   }
 
   /// A faster way to display a material snackbar.
@@ -200,14 +176,14 @@ class MaterialSnackBarMessengerState {
       snackbar: MaterialSnackbar(
         content: Text(content),
         theme: Theme.of(context).snackBarTheme,
-        actionBuilder: (context, close) => onAction != null
-            ? TextButton(
-                onPressed: () {
-                  onAction();
-                  close();
-                },
-                child: Text(actionText!),
-              )
+        actionBuilder: onAction != null
+            ? (context, close) => TextButton(
+                  onPressed: () {
+                    onAction();
+                    close();
+                  },
+                  child: Text(actionText!),
+                )
             : null,
       ),
     );
@@ -218,5 +194,18 @@ class MaterialSnackBarMessengerState {
   /// When a snackbar is currently displayed, it won't be affected.
   void emptyQueue() {
     MaterialSnackBarMessenger.snackbarQueue.clear();
+  }
+
+  void _queueSnackbars() {
+    if (MaterialSnackBarMessenger.snackbarQueue.isNotEmpty) _pushSnackbar();
+  }
+
+  Future<void> _pushSnackbar() async {
+    final returnData = await Navigator.of(context)
+        .push(SnackbarRoute(MaterialSnackBarMessenger.snackbarQueue.first));
+    if (returnData == null) {
+      Navigator.of(context).maybePop();
+      emptyQueue();
+    }
   }
 }

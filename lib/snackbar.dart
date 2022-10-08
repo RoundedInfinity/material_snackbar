@@ -1,6 +1,7 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+
 import 'package:material_snackbar/snackbar_messenger.dart';
+import 'package:material_snackbar/transition.dart';
 
 ///Builder for material snackbars with the ability to dismiss the snackbar.
 typedef CloseActionBuilder = Widget? Function(
@@ -54,6 +55,10 @@ class MaterialSnackbar extends StatefulWidget {
 
   /// The [SnackBarThemeData] to apply to this widget.
   final SnackBarThemeData? theme;
+
+  final Widget Function(
+          BuildContext context, Animation<double> animation, Widget snackbar)?
+      transitionBuilder;
 
   /// A Widget that follows the [newest material snackbar design.](https://material.io/components/snackbars#full-screen-dialog). To display this snackbar use the `MaterialSnackBarMessenger`.
   ///
@@ -114,11 +119,12 @@ class MaterialSnackbar extends StatefulWidget {
     this.action,
     this.duration = const Duration(seconds: 2),
     this.onDismiss,
-    this.enterDuration = const Duration(milliseconds: 150),
-    this.exitDuration = const Duration(milliseconds: 75),
-    this.enterCurve = Curves.easeOut,
+    this.enterDuration = const Duration(milliseconds: 250),
+    this.exitDuration = const Duration(milliseconds: 100),
+    this.enterCurve = Curves.linear,
     this.exitCurve = Curves.linear,
     this.theme,
+    this.transitionBuilder,
   }) : super(key: key);
 
   @override
@@ -155,7 +161,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
     super.initState();
 
     // set snackBarVisible to true after build has executed.
-    WidgetsBinding.instance!.addPostFrameCallback(
+    WidgetsBinding.instance.addPostFrameCallback(
       (_) => MaterialSnackBarMessenger.snackBarVisible = true,
     );
 
@@ -187,7 +193,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
   /// Hide this snackbar and with a fade out animation.
   Future<void> hideSnackbar() async {
     if (_controller.isCompleted && mounted) {
-      await _controller.reverse().orCancel;
+      await _controller.reverse();
     }
     if (mounted) {
       MaterialSnackBarMessenger.snackBarVisible = false;
@@ -235,7 +241,7 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
                     padding: const EdgeInsets.symmetric(vertical: 14.0),
                     child: DefaultTextStyle(
                       style: snackBarTheme.contentTextStyle ??
-                          theme.textTheme.bodyText2!,
+                          theme.textTheme.bodyMedium!,
                       maxLines: isMobile ? 2 : 1,
                       overflow: TextOverflow.ellipsis,
                       child: widget.content,
@@ -262,18 +268,30 @@ class _MaterialSnackbarState extends State<MaterialSnackbar>
       ),
     );
 
-// Don't use an animation if accessible navigation is activated.
+    // Don't use an animation if accessible navigation is activated.
+
+    final animation = CurvedAnimation(
+        parent: _controller,
+        curve: _controller.status == AnimationStatus.forward
+            ? widget.enterCurve
+            : widget.exitCurve);
+
+    final transition = widget.transitionBuilder != null
+        ? widget.transitionBuilder!(context, animation, _snackbar)
+        : defaultTransitionBuilder(
+            context,
+            _controller,
+            _snackbar,
+          );
+
     return MediaQuery.of(context).accessibleNavigation ||
             MaterialSnackBarMessenger.snackBarVisible
         ? _snackbar
-        : FadeScaleTransition(
-            animation: CurvedAnimation(
-              parent: _controller,
-              curve: _controller.status == AnimationStatus.forward
-                  ? widget.enterCurve
-                  : widget.exitCurve,
-            ),
-            child: _snackbar,
-          );
+        : transition;
+  }
+
+  Widget defaultTransitionBuilder(
+      BuildContext context, Animation<double> animation, Widget snackbar) {
+    return Material3ScaleTransition(animation: animation, child: snackbar);
   }
 }
